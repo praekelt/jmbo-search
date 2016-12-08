@@ -5,7 +5,7 @@ from os.path import expanduser
 
 BASE_DIR = os.path.join(
     glob.glob(os.environ["VIRTUAL_ENV"] +  "/lib/*/site-packages")[0],
-    "jmbo_search"
+    "search"
 )
 
 SECRET_KEY = "SECRET_KEY_PLACEHOLDER"
@@ -18,7 +18,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     # The order is important
-    "jmbo_search",
+    "search",
     "mobius",
     "jmbo",
     "photologue",
@@ -95,7 +95,7 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = "jmbo_search.tests.urls"
+ROOT_URLCONF = "search.tests.urls"
 
 WSGI_APPLICATION = "project.wsgi.application"
 
@@ -194,8 +194,8 @@ CACHES = {
 WEBPACK_LOADER = {
     "DEFAULT": {
         "CACHE": not DEBUG,
-        "BUNDLE_DIR_NAME": "jmbo_search/bundles/",
-        "STATS_FILE": os.path.join(BASE_DIR, "static", "jmbo_search", "bundles", "jmbo_search-bundlemap-website-prod.json"),
+        "BUNDLE_DIR_NAME": "search/bundles/",
+        "STATS_FILE": os.path.join(BASE_DIR, "static", "search", "bundles", "search-bundlemap-website-prod.json"),
         "POLL_INTERVAL": 0.1,
         "TIMEOUT": None,
         "IGNORE": [".+\.hot-update.js", ".+\.map"]
