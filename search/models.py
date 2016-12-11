@@ -1,6 +1,7 @@
 from jmbo.models import ModelBase
 
 
-class IndexedTrivialContent(ModelBase):
-    """We need one model so South migrations can be initiated."""
+class IndexedModelBase(ModelBase):
+    """Thin wrapper as hook for django-haystack's discovery of
+    indexable models."""
     pass

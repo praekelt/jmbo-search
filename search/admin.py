@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from jmbo.admin import ModelBaseAdmin
-from search.models import IndexedTrivialContent
+from search.models import IndexedModelBase
 
 
-admin.site.register(IndexedTrivialContent, ModelBaseAdmin)
+admin.site.register(IndexedModelBase, ModelBaseAdmin)

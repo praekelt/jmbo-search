@@ -7,5 +7,6 @@ urlpatterns = [
         r"^$",
         TemplateView.as_view(template_name="jmbo_search/home.html"),
         name="home"
-    )
+    ),
+    url(r'^search/', include('haystack.urls')),
 ]
