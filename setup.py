@@ -12,6 +12,7 @@ setup(
     packages = find_packages(),
     install_requires = [
         #'jmbo>=3.0.0', uncomment when released
+        jmbo-listing,
     ],
     include_package_data=True,
     classifiers = [
