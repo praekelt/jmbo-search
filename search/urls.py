@@ -1,12 +1,8 @@
-from django.conf.urls import url, include
-from django.views.generic.base import TemplateView
+from django.conf.urls import url
+
+from views import DisMaxSearchView
 
 
 urlpatterns = [
-    url(
-        r"^$",
-        TemplateView.as_view(template_name="jmbo_search/home.html"),
-        name="home"
-    ),
-    url(r'^search/', include('haystack.urls')),
+    url(r'^$', DisMaxSearchView.as_view(), name="search_view"),
 ]
