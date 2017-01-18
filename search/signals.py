@@ -40,7 +40,8 @@ def handle_index_update(action=None, callback_params={}):
         logger.warn("Indexing action cannot be None or empty!")
         return
 
-    model = ContentType.objects.get(id=callback_params["content_type_id"]).model_class()
+    ct_id = callback_params["content_type_id"]
+    model = ContentType.objects.get(id=ct_id).model_class()
     instance = model.objects.get(pk=callback_params["pk"])
 
     using_backends = connection_router.for_write(instance=instance)
@@ -52,6 +53,13 @@ def handle_index_update(action=None, callback_params={}):
                 index.update_object(instance, using=using)
             elif action == DELETE:
                 index.remove_object(instance, using=using)
+
+            # clean up the index item table now.
+            try:
+                item = IndexedItem.objects.get(content_type_pk=ct_id, instance_pk=instance.pk)
+                item.delete()
+            except ObjectDoesNotExist:
+                logger.warn("IndexedItem not found... continuing.")
         except NotHandled:
             logger.warn("No indexing backend found for %s" % instance)
 
@@ -70,8 +78,7 @@ def build_params(sender, instance):
 def not_in_queue(ct, instance):
     try:
         IndexedItem.objects.get(content_type_pk=ct.id, instance_pk=instance.pk)
-    except ObjectDoesNotExist as e:
-        print(e.args)
+    except ObjectDoesNotExist:
         return True
     return False
 
