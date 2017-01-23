@@ -18,6 +18,7 @@ class IndexMixin(indexes.SearchIndex):
         return self.model
 
     def index_queryset(self, using=None):
-        return self.get_model().objects.filter(
-            publish_on__lte=datetime.datetime.now()
-        )
+        return self.get_model().objects.all()
+        #return self.get_model().objects.filter(
+        #    publish_on__lte=datetime.datetime.now()
+        #)

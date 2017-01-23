@@ -15,6 +15,7 @@ class DisMaxSearchView(GenericSearchView):
                 parser_name=self.parser_name,
                 query_string=self.request.POST["q"],
                 qf=" ".join(self.query_fields),
+                q_alt="*:*",
                 mm=1
             )
             sqs = SearchQuerySet().filter(content=parser)
