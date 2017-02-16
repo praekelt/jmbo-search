@@ -88,7 +88,7 @@ class ModelBaseSignalProcessor(signals.BaseSignalProcessor):
         """Bind the post_save signal to our jmbo ModelBase only.
         """
         models.signals.post_save.connect(self.handle_save)
-        models.signals.post_delete.connect(self.handle_delete)
+        models.signals.pre_delete.connect(self.handle_delete)
 
     def teardown(self):
         """Remove the post_save signal from our jmbo ModelBase.
