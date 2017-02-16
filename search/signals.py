@@ -122,10 +122,8 @@ class ModelBaseSignalProcessor(signals.BaseSignalProcessor):
 
         ct = ContentType.objects.get_for_model(instance.__class__)
         if not_in_queue(ct, instance):
-            item = IndexedItem.objects.create(
-                {"content_type_pk": ct.id,
-                 "instance_pk": instance.pk}
-            )
+            kwargs = {"content_type_pk": ct.id, "instance_pk": instance.pk}
+            item = IndexedItem.objects.create(**kwargs)
             item.save()
 
             callback = "search.signals.remove_from_index"
