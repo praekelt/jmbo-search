@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 ADD = "add"
 DELETE = "delete"
+ADD_CALLBACK = "search.signals.add_to_index"
+DELETE_CALLBACK = "search.signals.remove_from_index"
 
 
 def add_to_index(callback_params):
@@ -109,9 +111,12 @@ class ModelBaseSignalProcessor(signals.BaseSignalProcessor):
             item = IndexedItem.objects.create(**kwargs)
             item.save()
 
-            callback = "search.signals.add_to_index"
             params = build_params(sender, instance)
-            tasks.update_index(callback=callback, callback_params=params, **kwargs)
+            tasks.update_index(
+                callback=ADD_CALLBACK,
+                callback_params=params,
+                **kwargs
+            )
 
     def handle_delete(self, sender, instance, **kwargs):
         """Defer the actual indexing to a celery async task.
@@ -126,6 +131,9 @@ class ModelBaseSignalProcessor(signals.BaseSignalProcessor):
             item = IndexedItem.objects.create(**kwargs)
             item.save()
 
-            callback = "search.signals.remove_from_index"
             params = build_params(sender, instance)
-            tasks.update_index(callback=callback, callback_params=params, **kwargs)
+            tasks.update_index(
+                callback=DELETE_CALLBACK,
+                callback_params=params,
+                **kwargs
+            )
