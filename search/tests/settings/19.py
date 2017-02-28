@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
     # These apps have no templates
     "celery",
+    "haystack",
     "layers",
     "raven.contrib.django.raven_compat",
     "rest_framework",
@@ -201,3 +202,13 @@ WEBPACK_LOADER = {
         "IGNORE": [".+\.hot-update.js", ".+\.map"]
     }
 }
+CELERY_TASK_ALWAYS_EAGER = True
+broker_url = 'amqp://myuser:mypassword@localhost:5672//'
+
+HAYSTACK_CONNECTIONS = {
+    "default": {
+        "ENGINE": "haystack.backends.solr_backend.SolrEngine",
+        "URL": "http://127.0.0.1:8983/solr",
+    },
+}
+# HAYSTACK_SIGNAL_PROCESSOR = "search.signals.ModelBaseSignalProcessor"

@@ -42,8 +42,13 @@ termcolor==1.1.0
 cached-property==1.2.0
 lxml==3.6.4
 django-webpack-loader==0.3.3
-django-layers-hr==1.9
+django-layers-hr==1.10.0
 celery==4.0.0
 raven==5.32.0
 kombu==4.0.0
 django-crum==0.7.1
+pysolr>=3.3.2
+urllib3>=1.19.1
+django-haystack==2.6.0
+python-dateutil==2.6.0
+mock==2.0.0
