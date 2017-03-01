@@ -1,25 +1,37 @@
+import uuid
+
 from mock import patch
 
 from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.test import TestCase, LiveServerTestCase
 
-from search import signals
+from search import signals, tasks
+from search.models import IndexedItem
 from jmbo.models import ModelBase
+from photologue.models import Photo
 
 
-class TestIndexUpdateHandlers(TestCase):
-    @patch("search.signals.handle_index_update")
-    def test_add_to_index(self, handler):
-        assert True
+class TestSignalHandlers(TestCase):
+    def test_add_to_index(self):
+        pass
 
     def test_remove_from_index(self):
-        assert True
+        pass
 
     def test_handle_index_update(self):
-        assert True
+        pass
 
 
-class TestModelSignalProcessor(TestCase):
+class TestSignalUtils(TestCase):
+    def test_build_params(self):
+        pass
+
+    def test_not_in_queue(self):
+        pass
+
+
+class TestModelBaseSignalProcessor(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.instance = ModelBase.objects.create()
@@ -33,9 +45,24 @@ class TestModelSignalProcessor(TestCase):
         }
         cls.empty_kwargs = {}
 
+    def test_setup(self):
+        self.assertTrue(
+            models.signals.post_save.has_listeners(self.processor)
+        )
+        self.assertTrue(
+            models.signals.pre_delete.has_listeners(self.processor)
+        )
+
     @patch("search.tasks.update_index")
-    def test_handle_save(self, task):
+    def test_handle_save_update_index(self, task):
         self.processor.handle_save(None, self.instance, **self.empty_kwargs)
+
+        indexed_item = IndexedItem.objects.get(
+                instance_pk=self.instance.pk,
+                content_type_pk=self.content_type.pk
+                )
+        self.assertIsNotNone(indexed_item)
+
         task.assert_called_once()
         task.assert_called_with(
             callback = signals.ADD_CALLBACK,
@@ -44,11 +71,52 @@ class TestModelSignalProcessor(TestCase):
         )
 
     @patch("search.tasks.update_index")
-    def test_handle_delete(self, task):
+    def test_handle_delete_update_index(self, task):
         self.processor.handle_delete(None, self.instance, **self.empty_kwargs)
+
+        indexed_item = IndexedItem.objects.get(
+                instance_pk=self.instance.pk,
+                content_type_pk=self.content_type.pk
+                )
+        self.assertIsNotNone(indexed_item)
+
         task.assert_called_once()
         task.assert_called_with(
             callback = signals.DELETE_CALLBACK,
             callback_params = self.callback_params,
             **self.empty_kwargs
         )
+
+    @patch("search.tasks.update_index")
+    @patch("search.signals.build_params")
+    def test_handle_save_build_params(self, params_builder, update_index):
+        tasks.update_index = update_index
+        self.processor.handle_save(None, self.instance, **self.empty_kwargs)
+        params_builder.assert_called_with(None, self.instance)
+
+    @patch("search.tasks.update_index")
+    @patch("search.signals.build_params")
+    def test_handle_delete_build_params(self, params_builder, update_index):
+        tasks.update_index = update_index
+        self.processor.handle_delete(None, self.instance, **self.empty_kwargs)
+        params_builder.assert_called_with(None, self.instance)
+
+    def test_handle_save_indexable_content_type(self):
+        # create an indexable object
+        self.processor.handle_save(None, self.instance, **self.empty_kwargs)
+
+        self.assertEquals(IndexedItem.objects.all().count(), 1)
+        
+        indexed_item = IndexedItem.objects.get(
+            instance_pk = self.instance.pk,
+            content_type_pk = self.content_type.pk
+        )
+        self.assertIsNotNone(indexed_item)
+
+    def test_handle_save_nonindexable_content_type(self):
+        # create non-indexable object
+        instance = Photo.objects.create()
+        self.processor.handle_save(None, instance, **self.empty_kwargs)
+
+        self.assertEquals(IndexedItem.objects.all().count(), 0)
+
