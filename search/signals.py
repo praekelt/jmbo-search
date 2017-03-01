@@ -87,13 +87,13 @@ def not_in_queue(ct, instance):
 
 class ModelBaseSignalProcessor(signals.BaseSignalProcessor):
     def setup(self):
-        """Bind the post_save signal to our jmbo ModelBase only.
+        """Bind the signals to our jmbo ModelBase only.
         """
         models.signals.post_save.connect(self.handle_save)
         models.signals.pre_delete.connect(self.handle_delete)
 
     def teardown(self):
-        """Remove the post_save signal from our jmbo ModelBase.
+        """Remove the signals from our jmbo ModelBase.
         """
         models.signals.post_save.disconnect(self.handle_save)
         models.signals.post_delete.disconnect(self.handle_delete)
