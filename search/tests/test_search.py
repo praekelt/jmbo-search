@@ -101,9 +101,12 @@ class TestModelBaseSignalProcessor(TestCase):
         self.processor.handle_delete(None, self.instance, **self.empty_kwargs)
         params_builder.assert_called_with(None, self.instance)
 
-    def test_handle_save_indexable_content_type(self):
+    @patch("search.tasks.update_index")
+    def test_handle_save_indexable_content_type(self, update_index):
         # create an indexable object
         self.processor.handle_save(None, self.instance, **self.empty_kwargs)
+
+        update_index.assert_called_once()
 
         self.assertEquals(IndexedItem.objects.all().count(), 1)
         
@@ -113,10 +116,38 @@ class TestModelBaseSignalProcessor(TestCase):
         )
         self.assertIsNotNone(indexed_item)
 
-    def test_handle_save_nonindexable_content_type(self):
+    @patch("search.tasks.update_index")
+    def test_handle_save_nonindexable_content_type(self, update_index):
         # create non-indexable object
         instance = Photo.objects.create()
         self.processor.handle_save(None, instance, **self.empty_kwargs)
+
+        update_index.assert_not_called()
+
+        self.assertEquals(IndexedItem.objects.all().count(), 0)
+
+    @patch("search.tasks.update_index")
+    def test_handle_delete_indexable_content_type(self, update_index):
+        # create an indexable object
+        self.processor.handle_delete(None, self.instance, **self.empty_kwargs)
+
+        update_index.assert_called_once()
+
+        self.assertEquals(IndexedItem.objects.all().count(), 1)
+
+        indexed_item = IndexedItem.objects.get(
+            instance_pk = self.instance.pk,
+            content_type_pk = self.content_type.pk
+        )
+        self.assertIsNotNone(indexed_item)
+
+    @patch("search.tasks.update_index")
+    def test_handle_delete_nonindexable_content_type(self, update_index):
+        # create non-indexable object
+        instance = Photo.objects.create()
+        self.processor.handle_delete(None, instance, **self.empty_kwargs)
+
+        update_index.assert_not_called()
 
         self.assertEquals(IndexedItem.objects.all().count(), 0)
 
