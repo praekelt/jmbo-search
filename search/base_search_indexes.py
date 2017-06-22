@@ -5,7 +5,7 @@ from haystack import indexes
 
 class ComputedField(indexes.SearchField):
     def prepare(self, obj):
-        return " ".join([obj.title, obj.subtitle, obj.slug])
+        return " ".join(filter(None, [obj.title, obj.subtitle, obj.slug]))
 
 
 class IndexMixin(indexes.SearchIndex):
