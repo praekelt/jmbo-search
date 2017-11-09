@@ -52,13 +52,18 @@ def handle_index_update(action=None, callback_params={}):
             unified_index = connections[using].get_unified_index()
             index = unified_index.get_index(model)
             if action == ADD:
-                index.update_object(instance, using=using)
+                if instance.state == "unpublished":
+                    index.remove_object(instance, using=using)
+                else:
+                    index.update_object(instance, using=using)
             elif action == DELETE:
                 index.remove_object(instance, using=using)
 
             # clean up the index item table now.
             try:
-                item = IndexedItem.objects.get(content_type_pk=ct_id, instance_pk=instance.pk)
+                item = IndexedItem.objects.get(
+                    content_type_pk=ct_id, instance_pk=instance.pk
+                )
                 item.delete()
             except ObjectDoesNotExist:
                 logger.warn("IndexedItem not found... continuing.")
