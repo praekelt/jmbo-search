@@ -1,3 +1,8 @@
+*.swp
+*.pyc
+*.egg-info
+ve/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -12,6 +17,10 @@ env/
 build/
 develop-eggs/
 dist/
+*.swo
+/docs/_build
+coverage.xml
+pep8.txt
 downloads/
 eggs/
 .eggs/

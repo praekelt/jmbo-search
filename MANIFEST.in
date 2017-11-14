@@ -1,0 +1,10 @@
+include AUTHORS.rst
+include CHANGELOG.rst
+include README.rst
+include LICENSE
+recursive-include search/fixtures *
+recursive-include search/management *
+recursive-include search/migrations *
+recursive-include search/static *
+recursive-include search/templates *
+recursive-include search/tests *
